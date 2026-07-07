@@ -132,19 +132,28 @@ class Utils {
 	 * @return bool true or false
 	 */
 	public static function handleShowAndHide( &$parser, &$text ) {
-		$factory = MediaWikiServices::getInstance()->getMagicWordFactory();
-		$mw_hide = $factory->get( 'MAG_HIDEFROMDRILLDOWN' );
-		$mw_show = $factory->get( 'MAG_SHOWINDRILLDOWN' );
-
-		$parserOutput = $parser->getOutput();
-		if ( $mw_hide->matchAndRemove( $text ) ) {
-			$parserOutput->setPageProperty( 'hidefromdrilldown', 'y' );
-		}
-		if ( $mw_show->matchAndRemove( $text ) ) {
-			$parserOutput->setPageProperty( 'showindrilldown', 'y' );
-		}
-		return true;
+	    $factory = MediaWikiServices::getInstance()->getMagicWordFactory();
+	    $parserOutput = $parser->getOutput();
+	
+	    $mwHideObj = $factory->get( 'MAG_HIDEFROMDRILLDOWN' );
+	    if ( $mwHideObj ) {
+	        if ( $mwHideObj->match( $text ) ) {
+	            $parserOutput->setPageProperty( 'hidefromdrilldown', 'y' );
+	            $text = $mwHideObj->replace( '', $text );
+	        }
+	    }
+	
+	    $mwShowObj = $factory->get( 'MAG_SHOWINDRILLDOWN' );
+	    if ( $mwShowObj ) {
+	        if ( $mwShowObj->match( $text ) ) {
+	            $parserOutput->setPageProperty( 'showindrilldown', 'y' );
+	            $text = $mwShowObj->replace( '', $text );
+	        }
+	    }
+	
+	    return true;
 	}
+
 
 	public static function getIDsTableName() {
 		return SQLStore::ID_TABLE;
